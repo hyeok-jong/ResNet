@@ -38,6 +38,9 @@ Finally `ResNet/dataloader.py` will makes `torch.DataLoader`.
 [Paper](https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/He_Deep_Residual_Learning_CVPR_2016_paper.pdf)  
 [Paper reviews](https://hyeok-jong.github.io/paper%20base%20line/Paper_ResNet/)  
 
+For visualizing model architecture `ResNet/resnet34.py` will give you onnx file.  
+In [Netron](https://netron.app/) model will opend.  
+
 ## 3. Train  
 In `ResNet/results` many file will be made.  
 
