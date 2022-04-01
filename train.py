@@ -1,4 +1,4 @@
-from os import lseek
+
 from dataloader import make_dataloader
 from resnet34 import res34, initialize_weights
 from trainer import trainer
@@ -23,6 +23,48 @@ def args():
     parser.add_argument("--epoch", type = int, help = "training epochs")
     return parser.parse_args()
 
+
+
+def save_plots(loss_history, metric_history, result_dir):
+
+    # Save loss plot
+    plt.title("Train-Val Loss")
+    plt.plot(range(1,num_epochs+1),loss_history["train"],label="train")
+    plt.plot(range(1,num_epochs+1),loss_history["val"],label="val")
+    plt.ylabel("Loss")
+    plt.xlabel("Training Epochs")
+    plt.savefig(result_dir + "/loss_hist.png")
+
+    # Save metric plot
+    plt.title("Train-Val Metric")
+    plt.plot(range(1,num_epochs+1),metric_history["train"],label="train")
+    plt.plot(range(1,num_epochs+1),metric_history["val"],label="val")
+    plt.ylabel("Metric")
+    plt.xlabel("Training Epochs")
+    plt.savefig(result_dir + "/metric_hist.png")
+
+
+def test_dataset(test_dl, loss_func, metric_function, device):
+    running_loss = 0.0
+    running_metric = 0.0
+
+    with torch.no_grad():      
+        running_loss = 0.0
+        running_metric = 0.0
+        len_data_test = len(test_dl.dataset)
+                
+        for inputs, targets in test_dl:
+            inputs , targets = inputs.to(device) , targets.to(device)
+            outputs = model(inputs)
+            
+            loss_batch = loss_func(outputs, targets)
+            metric_batch = metric_function(outputs, targets)
+                    
+            running_loss += loss_batch.item()
+            running_metric += metric_batch
+        test_loss = running_loss / len_data_test
+        test_metric = running_metric / len_data_test
+    print('test loss: %.6f, test accuracy: %.2f' %(test_loss, 100*test_metric))
 
 
 
@@ -56,66 +98,30 @@ if __name__ == "__main__":   # 이 파일 자체를 어디에서 import하지는
     'GPU' : "cuda:"+ str(args.GPU),
     "metric_func" : metric_function }
 
+
+
+    ## Training *********************************************************
     model, loss_history, metric_history = trainer(model, params_train)
 
 
     # 최종 학습이 끝난 후 저장합니다.
     result_dir = args.result_dir
     torch.save(model.state_dict(), result_dir+'/trained_model_params_final_' + str(args.epoch) + '_epochs.pt')
-    # torch.save(checkpoint_model, result_dir+'/trained_model_final_' + str(args.epoch) + '_epochs.pt')
+    # torch.save(checkpoint_model, result_dir+'/trained_model_final_' + str(args.epoch) + '_epochs.pt')   이건 모델을 직접 저장하는 방법인데, 공식문서에서 추천하지 않는 방법입니다.
+    # 정확히는 model을 직접 저장하면, 어떤 부분에서도 오류나 날수 있다고 경고 합니다.
+    
     torch.save(opt.state_dict(), result_dir+'/trained_model_opt_fianl_' + str(args.epoch) + '_epochs.pt')
     print(f'Copied model parameter and opt with {args.epoch}th epoch')
 
     num_epochs=params_train["num_epochs"]
 
-    # plot loss progress
-    plt.title("Train-Val Loss")
-    plt.plot(range(1,num_epochs+1),loss_history["train"],label="train")
-    plt.plot(range(1,num_epochs+1),loss_history["val"],label="val")
-    plt.ylabel("Loss")
-    plt.xlabel("Training Epochs")
-    plt.savefig(result_dir + "/loss_hist.png")
-    
-
-    plt.title("Train-Val Metric")
-    plt.plot(range(1,num_epochs+1),metric_history["train"],label="train")
-    plt.plot(range(1,num_epochs+1),metric_history["val"],label="val")
-    plt.ylabel("Metric")
-    plt.xlabel("Training Epochs")
-    plt.savefig(result_dir + "/metric_hist.png")
-
-    
-
-
-
-
-
+    # Save hist lists as plots
+    save_plots (loss_history, metric_history, result_dir)
 
 
     # test dataset
 
-    running_loss = 0.0
-    running_metric = 0.0
-    loss_func = params_train['loss_func']
-    with torch.no_grad():      
-        running_loss = 0.0
-        running_metric = 0.0
-            
-        len_data_test = len(test_dl.dataset)
-                
-        for inputs, targets in test_dl:
-            inputs , targets = inputs.to(device) , targets.to(device)
-            outputs = model(inputs)
-                    
-            loss_batch = loss_func(outputs, targets)
-            metric_batch = metric_function(outputs, targets)
-                    
-            running_loss += loss_batch.item()
-            running_metric += metric_batch
-        test_loss = running_loss / len_data_test
-        test_metric = running_metric / len_data_test
-    print('test loss: %.6f, test accuracy: %.2f' %(test_loss, 100*test_metric))
-
+    test_dataset(test_dl, params_train["loss_func"], params_train["metric_func"], params_train["GPU"])
 
 
 
