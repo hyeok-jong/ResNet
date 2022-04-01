@@ -42,7 +42,11 @@ For visualizing model architecture `ResNet/resnet34.py` will give you onnx file.
 In [Netron](https://netron.app/) model will opend.  
 
 ## 3. Train  
-In `ResNet/results` many file will be made.  
+In `ResNet/results` many files will be made.  
+
+Every 5 epochs parameters ansd opt saved.
+Every single epoch loss and metric saved.  
+Finished training, loss and metric plot saved.  
 
 
 `python train.py --data_dir /home/mskang/hyeokjong/ResNet/cifar-100-python --result_dir /home/mskang/hyeokjong/ResNet/results --GPU 1 --batch_size 256 --epoch 6`
