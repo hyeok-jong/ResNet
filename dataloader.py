@@ -56,7 +56,7 @@ class custom_dataset(Dataset):
 
 
 
-class RandomFlip(object):  # segmenstaion같은 경우는 target도 같이 바꿔야 하는데 지금은 classification 생략합니다.
+class RandomFlip():  # segmenstaion같은 경우는 target도 같이 바꿔야 하는데 지금은 classification 생략합니다.
     # input으로 numpy를 받는다.
     def __init__(self, horizontal = True, vertical = False, p = 0.5): 
         self.horizontal = horizontal
@@ -88,12 +88,12 @@ class RandomFlip(object):  # segmenstaion같은 경우는 target도 같이 바�
 
 
 
-def make_dataloader(dir, batch_size):
+def make_dataloader(dir, batch_size, transform = RandomFlip()):
 
     train_dir = dir + "/train_resized"
     test_dir = dir + "/test_resized"
 
-    train_dataset = custom_dataset(train_dir)
+    train_dataset = custom_dataset(train_dir, transform)
     valid_dataset = custom_dataset(test_dir)
     valid_dataset, test_dataset = split(valid_dataset, 0.5)
     
