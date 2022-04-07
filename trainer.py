@@ -54,7 +54,7 @@ def trainer(model, params):
         running_metric = 0.0
         # epoch 마다 0으로 만들어 준다.
     
-        len_data_train = len(train_dl)
+        iteration_num_train = len(train_dl)
         # 이건 iteration 수이다.
         # 전체 데이터를 다 도는데 mini batch로 돌때 몇번 걸리는가이다.
         # len(train_dl.dataset)으로  전체 data의 개수이다.
@@ -76,8 +76,8 @@ def trainer(model, params):
                 
 
             
-        train_loss = running_loss / len_data_train     # 따라서 이 값이 1-epoch당 loss와 metric이다. 이때 굳이 loss에서 sum을 하였는데
-        train_metric = running_metric / len_data_train # 이는 batch 별로 다 더하고 여기서 한번에 다음과 같이 나누는게 편해서이다.
+        train_loss = running_loss / iteration_num_train     # 따라서 이 값이 1-epoch당 loss와 metric이다. 이때 굳이 loss에서 sum을 하였는데
+        train_metric = running_metric / iteration_num_train # 이는 batch 별로 다 더하고 여기서 한번에 다음과 같이 나누는게 편해서이다.
                    
         loss_history['train'].append(train_loss)       # 매 epoch당 저장해 둔다.
         metric_history['train'].append(train_metric)
@@ -92,7 +92,7 @@ def trainer(model, params):
             running_loss = 0.0
             running_metric = 0.0
         
-            len_data_val = len(val_dl.dataset)
+            iteration_num_val = len(val_dl)
             
             for inputs, targets in val_dl:
                 inputs , targets = inputs.to(device) , targets.to(device)
@@ -104,8 +104,8 @@ def trainer(model, params):
                 running_loss += loss_batch.item()
                 running_metric += metric_batch
                 
-            val_loss = running_loss / len_data_val
-            val_metric = running_metric / len_data_val
+            val_loss = running_loss / iteration_num_val
+            val_metric = running_metric / iteration_num_val
             # 이거 loss 설정할때 mean으로 해줬으니 각 iteration마다는 평균으로 계산된다.
             # 하지만 이를 다 합쳤으니 iteration만큼 나눠줘야 한다.
                    
