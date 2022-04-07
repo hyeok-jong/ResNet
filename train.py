@@ -33,14 +33,18 @@ def save_plots(loss_history, metric_history, result_dir):
     plt.plot(range(1,num_epochs+1),loss_history["val"],label="val")
     plt.ylabel("Loss")
     plt.xlabel("Training Epochs")
+    plt.legend()
     plt.savefig(result_dir + "/loss_hist.png")
-
+    
+    plt.clf()
+    
     # Save metric plot
     plt.title("Train-Val Metric")
     plt.plot(range(1,num_epochs+1),metric_history["train"],label="train")
     plt.plot(range(1,num_epochs+1),metric_history["val"],label="val")
     plt.ylabel("Metric")
     plt.xlabel("Training Epochs")
+    plt.legend()
     plt.savefig(result_dir + "/metric_hist.png")
 
 
