@@ -54,8 +54,10 @@ def trainer(model, params):
         running_metric = 0.0
         # epoch 마다 0으로 만들어 준다.
     
-        len_data_train = len(train_dl.dataset)
-        # 이는 전체 data의 개수이다.
+        len_data_train = len(train_dl)
+        # 이건 iteration 수이다.
+        # 전체 데이터를 다 도는데 mini batch로 돌때 몇번 걸리는가이다.
+        # len(train_dl.dataset)으로  전체 data의 개수이다.
         
         for inputs, targets in tqdm(train_dl):   
             # 1-batch train
@@ -104,6 +106,8 @@ def trainer(model, params):
                 
             val_loss = running_loss / len_data_val
             val_metric = running_metric / len_data_val
+            # 이거 loss 설정할때 mean으로 해줬으니 각 iteration마다는 평균으로 계산된다.
+            # 하지만 이를 다 합쳤으니 iteration만큼 나눠줘야 한다.
                    
             loss_history['val'].append(val_loss)
             metric_history['val'].append(val_metric)
