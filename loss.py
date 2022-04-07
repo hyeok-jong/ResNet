@@ -1,3 +1,3 @@
 import torch.nn as nn
 
-loss_function = nn.CrossEntropyLoss(reduction = 'sum')
+loss_function = nn.CrossEntropyLoss(reduction = 'mean')
